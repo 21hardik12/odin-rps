@@ -4,59 +4,85 @@ function getComputerChoice() {
     return choice;
 }
 
+function displayResult(result) {
+    const div = document.getElementById('result');
+    div.innerHTML = result;
+}
+
 function playRound(playerSelection, computerSelection) {
     playerSelection = playerSelection.toLowerCase();
     let result;
     if (playerSelection === "rock" && computerSelection === "scissors") {
         //console.log("You Win! Rock beats Scissors");
         result = "You Win! Rock beats Scissors";
-        console.log(result);
+        displayResult(result);
         return true;
     } else if (playerSelection === "rock" && computerSelection === "paper") {
         result = "You Lose! Paper beats Rock";
-        console.log(result);
+        displayResult(result);
         return false;
     } else if (playerSelection === "paper" && computerSelection === "rock") {
         result = "You Win! Paper beats Rock";
-        console.log(result);
+        displayResult(result);
         return true;
     } else if (playerSelection === "paper" && computerSelection === "scissors") {
         result = "You Lose! Scissors beats Paper";
-        console.log(result);
+        displayResult(result);
         return false;
     } else if (playerSelection === "scissors" && computerSelection === "rock") {
         result = "You Lose! Rock beats Scissors";
-        console.log(result);
+        displayResult(result);
         return false;
     } else if (playerSelection === "scissors" && computerSelection === "paper") {
         result = "You Win! Scissors beats Paper";
-        console.log(result);
+        displayResult(result);
         return true;
     } else {
         result = `It's a Draw! You both selected ${playerSelection}`;
-        console.log(result);
+        displayResult(result);
         return -1;
     }    
 }
 
-function game() {
-    let countPlayer = 0;
-    let countComputer = 0;
-    for (let i = 0; i < 5; i++) {
-        console.log(`Round ${i+1}`);
-        const playerSelection = prompt("Enter your selection:");
-        const computerSelection = getComputerChoice();
-        let result = playRound(playerSelection, computerSelection);
-        if (result === true) countPlayer++;
-        else if (result === false) countComputer++;    
-    }    
-    if (countPlayer > countComputer) {
-        console.log("Congratulations! You Won the game");
-    } else if (countComputer > countPlayer) {
-        console.log("You Lost the game!");
-    } else {
-        console.log("The game was a Draw");
-    }
+function updateScore(player, computer) {
+    const div = document.getElementById("score");
+    div.innerText = `player score: ${player}  computer score: ${computer}`;
 }
 
-game();
+function updateRound(round) {
+    const div = document.getElementById("round");
+    div.innerText = `round: ${round}`
+}
+
+let countPlayer = 0;
+let countComputer = 0;
+
+let round = 1;
+updateRound(round);
+const buttons = document.querySelectorAll("button");
+buttons.forEach(btn => {    
+    btn.addEventListener("click", (e) => {        
+        const computerSelection = getComputerChoice();
+        let result = playRound(btn.innerText, computerSelection);
+        if (result === true) countPlayer++;
+        else if (result === false) countComputer++;        
+        updateScore(countPlayer, countComputer);
+        if (round >= 5) {
+            let str = '';
+            if (countPlayer > countComputer) {
+                str += "Congratulations! You Won the game";
+            } else if (countComputer > countPlayer) {
+                str += "You Lost the game!";
+            } else {
+                str += "The game was a Draw";
+            }
+            const div = document.createElement('div');
+            div.innerText = str;
+            const body = document.querySelector("body");
+            body.appendChild(div);
+            round = 0;
+        }    
+        round++;    
+        updateRound(round);
+    });      
+});
